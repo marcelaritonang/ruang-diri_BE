@@ -1,0 +1,1 @@
+CREATE INDEX "idx_counselings_status" ON "counselings" USING btree ("status");

@@ -1,0 +1,3659 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "User login",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClientRegisterRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientRegisterResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User already exists or validation error"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Client registration",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForgotPasswordResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Request password reset",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword_v1",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetPasswordResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token or password"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reset password",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "UsersController_getUsers_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/me": {
+      "get": {
+        "operationId": "UsersController_getMe_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current user information",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/change-password": {
+      "patch": {
+        "operationId": "UsersController_changePassword_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChangePasswordResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid password"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Change user password",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/profile": {
+      "patch": {
+        "operationId": "UsersController_updateUserProfile_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/organizations/students": {
+      "get": {
+        "operationId": "OrganizationsController_getStudents_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchoolDocsResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Students not found"
+          },
+          "409": {
+            "description": "Organization ID is required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization, super_admin] Get students list",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/employees": {
+      "get": {
+        "operationId": "OrganizationsController_getEmployees_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyDocsResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query parameters"
+          },
+          "404": {
+            "description": "Employees not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization, super_admin] Get employees list",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/profile": {
+      "patch": {
+        "operationId": "OrganizationsController_updateOrganizationInfo_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid update data"
+          },
+          "409": {
+            "description": "Organization ID is required"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization, super_admin] Update organization profile",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/students/period": {
+      "get": {
+        "operationId": "OrganizationsController_getStudentsInPeriod_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/employees/period": {
+      "get": {
+        "operationId": "OrganizationsController_getEmployeesInPeriod_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/students/{id}": {
+      "patch": {
+        "operationId": "OrganizationsController_updateStudent_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/employees/{id}": {
+      "patch": {
+        "operationId": "OrganizationsController_updateEmployee_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/employees/roles": {
+      "get": {
+        "operationId": "EmployeeProfilesController_getDepartments_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRolesDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No roles found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get students academic information",
+        "tags": [
+          "Employees"
+        ]
+      }
+    },
+    "/api/v1/employees/metrics/monthly-stats": {
+      "get": {
+        "operationId": "EmployeeProfilesController_getMonthlyMentalHealthStats_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeDashboardMetricsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get dashboard metrics for students",
+        "tags": [
+          "Employees"
+        ]
+      }
+    },
+    "/api/v1/employees/metrics/yearly-stats": {
+      "get": {
+        "operationId": "EmployeeProfilesController_getYearlyMentalHealthStats_v1",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "description": "Year for which to fetch metrics",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "department",
+            "required": true,
+            "in": "query",
+            "description": "Department to filter metrics by",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeDashboardMetricsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid year or department"
+          },
+          "404": {
+            "description": "No metrics found for the given year"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get yearly mental health metrics for students",
+        "tags": [
+          "Employees"
+        ]
+      }
+    },
+    "/api/v1/employees/bulk-create/file": {
+      "post": {
+        "operationId": "EmployeeProfilesController_uploadEmployeesProfiles_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Employees"
+        ]
+      }
+    },
+    "/api/v1/employees/{id}": {
+      "get": {
+        "operationId": "EmployeeProfilesController_getStudentDetail_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Student ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Employee not found"
+          },
+          "404": {
+            "description": "Employee not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get employee detail by ID",
+        "tags": [
+          "Employees"
+        ]
+      }
+    },
+    "/api/v1/students/academic-info": {
+      "get": {
+        "operationId": "StudentProfilesController_getStudentsAcademicInfo_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentAcademicInfoDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Students academic info not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get students academic information",
+        "tags": [
+          "Students"
+        ]
+      }
+    },
+    "/api/v1/students/metrics/monthly-stats": {
+      "get": {
+        "operationId": "StudentProfilesController_getMonthlyMentalHealthStats_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDashboardMetricsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get dashboard metrics for students",
+        "tags": [
+          "Students"
+        ]
+      }
+    },
+    "/api/v1/students/metrics/yearly-stats": {
+      "get": {
+        "operationId": "StudentProfilesController_getYearlyMentalHealthStats_v1",
+        "parameters": [
+          {
+            "name": "year",
+            "required": true,
+            "in": "query",
+            "description": "Year",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "grade",
+            "required": true,
+            "in": "query",
+            "description": "Grade level",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "classroom",
+            "required": true,
+            "in": "query",
+            "description": "Classroom identifier",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDashboardMetricsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Year must be a number"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get yearly mental health statistics for students",
+        "tags": [
+          "Students"
+        ]
+      }
+    },
+    "/api/v1/students": {
+      "get": {
+        "operationId": "StudentProfilesController_uploadStudentProfiles_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Students"
+        ]
+      }
+    },
+    "/api/v1/students/{id}": {
+      "get": {
+        "operationId": "StudentProfilesController_getStudentDetail_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Student ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StudentDetailDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Student not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "[Roles: organization] Get student detail by ID",
+        "tags": [
+          "Students"
+        ]
+      }
+    },
+    "/api/v1/psychologists": {
+      "get": {
+        "description": "\n      Get a list of psychologists with comprehensive filtering and enhanced card data.\n      \n      **New Features:**\n      - Date-based availability filtering\n      - Years of experience filtering  \n      - Specialty-based filtering\n      - Session type filtering\n      - Rich card data with availability info\n      - Primary specialty badges\n      - Active status with license validation\n      - Price per session information\n    ",
+        "operationId": "PsychologistsController_getPsychologists_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Enhanced psychologist cards with availability info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "uuid"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Dr. Sarah Wijaya"
+                              },
+                              "titles": {
+                                "type": "string",
+                                "example": "Dr., M.Psi"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "primarySpecialty": {
+                                "type": "string",
+                                "example": "Psikolog Klinis Dewasa"
+                              },
+                              "specialties": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "yearsOfPractice": {
+                                "type": "number",
+                                "example": 8
+                              },
+                              "licenseNumber": {
+                                "type": "string",
+                                "example": "PSY001-2024"
+                              },
+                              "isActive": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "hasAvailability": {
+                                "type": "boolean",
+                                "example": true
+                              },
+                              "nextAvailableAt": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "sessionTypes": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "online",
+                                    "chat",
+                                    "offline"
+                                  ]
+                                }
+                              },
+                              "pricePerSession": {
+                                "type": "number",
+                                "example": 150000
+                              },
+                              "location": {
+                                "type": "string",
+                                "example": "Jakarta Pusat"
+                              },
+                              "address": {
+                                "type": "string",
+                                "example": "Jl. Sudirman No. 1"
+                              }
+                            }
+                          }
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "properties": {
+                            "page": {
+                              "type": "number"
+                            },
+                            "limit": {
+                              "type": "number"
+                            },
+                            "total": {
+                              "type": "number"
+                            },
+                            "hasNext": {
+                              "type": "boolean"
+                            },
+                            "hasPrev": {
+                              "type": "boolean"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Psychologists retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get psychologists with enhanced filtering",
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/psychologists/locations": {
+      "get": {
+        "operationId": "PsychologistsController_getLocations_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/psychologists/expertise": {
+      "get": {
+        "operationId": "PsychologistsController_getExpertiseAreas_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all expertise areas that psychologists can specialize in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "Stress, Burnout, & Kecemasan",
+                        "Gangguan mood (depresi, bipolar)",
+                        "Gangguan Kecemasan"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Expertise areas retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all available expertise areas",
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/psychologists/specializations": {
+      "get": {
+        "operationId": "PsychologistsController_getSpecializations_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all psychologist specialization types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "Psikolog Klinis Dewasa",
+                        "Psikolog Klinis Anak",
+                        "Psikolog Pendidikan",
+                        "Psikolog Umum"
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Specializations retrieved successfully"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all available specialization types",
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/psychologists/availability": {
+      "get": {
+        "operationId": "PsychologistsController_getAllPsychologistAvailability_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/psychologists/{id}/availability": {
+      "get": {
+        "operationId": "PsychologistsController_getPsychologistAvailability_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/psychologists/{id}/details": {
+      "get": {
+        "description": "Get comprehensive psychologist details including availability, specialties, and booking info",
+        "operationId": "PsychologistsController_getPsychologistDetails_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed psychologist information"
+          }
+        },
+        "summary": "Get detailed psychologist information",
+        "tags": [
+          "Psychologists"
+        ]
+      }
+    },
+    "/api/v1/counselings/book": {
+      "post": {
+        "operationId": "CounselingsController_bookCounseling_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Counselings"
+        ]
+      }
+    },
+    "/api/v1/counselings/schedules/organization": {
+      "get": {
+        "operationId": "CounselingsController_getAllCounselingSchedules_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Counselings"
+        ]
+      }
+    },
+    "/api/v1/counselings/schedules/psychologist": {
+      "get": {
+        "operationId": "CounselingsController_getCounselingSchedulesByPsychologist_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Counselings"
+        ]
+      }
+    },
+    "/api/v1/counselings/{id}/cancel": {
+      "post": {
+        "operationId": "CounselingsController_cancelCounseling_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Counselings"
+        ]
+      }
+    },
+    "/api/v1/counselings/{id}/reschedule": {
+      "put": {
+        "operationId": "CounselingsController_rescheduleCounseling_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Counselings"
+        ]
+      }
+    },
+    "/api/v1/screenings/questions": {
+      "get": {
+        "operationId": "ScreeningsController_getDass21Questions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/screenings": {
+      "post": {
+        "operationId": "ScreeningsController_createScreening_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/screenings/me": {
+      "get": {
+        "operationId": "ScreeningsController_getMyScreenings_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/screenings/organization/all": {
+      "get": {
+        "operationId": "ScreeningsController_getOrganizationScreenings_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/screenings/organization/analytics": {
+      "get": {
+        "operationId": "ScreeningsController_getScreeningAnalytics_v1",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/screenings/user/{userId}": {
+      "get": {
+        "operationId": "ScreeningsController_getUserScreenings_v1",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/screenings/{id}": {
+      "get": {
+        "operationId": "ScreeningsController_getScreeningById_v1",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Mental Health Screenings"
+        ]
+      }
+    },
+    "/api/v1/schedules": {
+      "get": {
+        "operationId": "SchedulesController_getSchedulesWithinRange_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      },
+      "post": {
+        "operationId": "SchedulesController_createSchedule_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      }
+    },
+    "/api/v1/schedules/attachments": {
+      "post": {
+        "operationId": "SchedulesController_uploadAttachments_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      }
+    },
+    "/api/v1/schedules/{id}": {
+      "delete": {
+        "operationId": "SchedulesController_deleteSchedule_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      },
+      "patch": {
+        "operationId": "SchedulesController_updateSchedule_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      },
+      "get": {
+        "operationId": "SchedulesController_getScheduleById_v1",
+        "parameters": [
+          {
+            "name": "timezone",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      }
+    },
+    "/api/v1/schedules/{id}/attachments": {
+      "delete": {
+        "operationId": "SchedulesController_deleteAttachment_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Schedules"
+        ]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "NotificationsController_getNotifications_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      },
+      "post": {
+        "operationId": "NotificationsController_createNotification_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/unread-count": {
+      "get": {
+        "operationId": "NotificationsController_getUnreadCount_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/mark-as-read": {
+      "post": {
+        "operationId": "NotificationsController_markAsRead_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/mark-all-as-read": {
+      "post": {
+        "operationId": "NotificationsController_markAllAsRead_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}": {
+      "delete": {
+        "operationId": "NotificationsController_deleteNotification_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      },
+      "get": {
+        "operationId": "NotificationsController_getNotificationById_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Notifications"
+        ]
+      }
+    },
+    "/api/v1/pdf/employees/risk-report": {
+      "get": {
+        "description": "Generate a PDF report with employee risk data from organization data",
+        "operationId": "PdfController_generateEmployeeRiskReport_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "PDF generated successfully",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate employee risk assessment PDF report",
+        "tags": [
+          "PDF Generator"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/preview/{organizationId}": {
+      "get": {
+        "description": "Shows what screening and counseling data will be deleted for users in the specified organization, without actually deleting anything.",
+        "operationId": "DataWipeController_previewWipeData_v1",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Preview data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": true,
+                    "message": "Wipe preview generated successfully",
+                    "data": {
+                      "organizationId": "ad6fb6dd-fa6f-46c5-ba76-9a2e5c6bcbcc",
+                      "totalUsers": 15,
+                      "usersByRole": {
+                        "employees": 12,
+                        "students": 3,
+                        "others": 0
+                      },
+                      "screeningsCount": 45,
+                      "counselingsCount": 8,
+                      "users": [
+                        {
+                          "id": "user-123",
+                          "fullName": "John Doe",
+                          "email": "john@company.com",
+                          "role": "employee",
+                          "screeningsCount": 3,
+                          "counselingsCount": 1
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preview data that will be wiped for an organization",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/execute/{organizationId}": {
+      "delete": {
+        "description": "PERMANENTLY DELETES all screening and counseling data for users in the specified organization. This action cannot be undone!",
+        "operationId": "DataWipeController_executeWipe_v1",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data wipe executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "example": {
+                    "success": true,
+                    "message": "Successfully wiped screening data for organization ad6fb6dd-fa6f-46c5-ba76-9a2e5c6bcbcc",
+                    "data": {
+                      "organizationId": "ad6fb6dd-fa6f-46c5-ba76-9a2e5c6bcbcc",
+                      "deletedData": {
+                        "screenings": 45,
+                        "counselings": 8
+                      },
+                      "affectedUsers": 15,
+                      "timestamp": "2024-01-15T10:30:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "🚨 DANGER: Execute data wipe for an organization",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/stats/{organizationId}": {
+      "get": {
+        "description": "Retrieves current statistics about screening and counseling data for users in the specified organization.",
+        "operationId": "DataWipeController_getOrganizationStats_v1",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization statistics retrieved successfully"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get screening statistics for an organization",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/preview/current-org": {
+      "get": {
+        "description": "Shows what screening and counseling data will be deleted for users in the current user's organization.",
+        "operationId": "DataWipeController_previewCurrentOrgWipeData_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preview data that will be wiped for current user's organization",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/stats/current-org": {
+      "get": {
+        "description": "Retrieves current statistics about screening and counseling data for the current user's organization.",
+        "operationId": "DataWipeController_getCurrentOrgStats_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get screening statistics for current user's organization",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/preview/target-organization": {
+      "get": {
+        "description": "Convenience endpoint to preview wipe data for the organization ID specified in the task.",
+        "operationId": "DataWipeController_previewTargetOrgData_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Preview data for the target organization (ad6fb6dd-fa6f-46c5-ba76-9a2e5c6bcbcc)",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/execute/target-organization": {
+      "delete": {
+        "description": "PERMANENTLY DELETES all screening and counseling data for the organization ID specified in the task. This action cannot be undone!",
+        "operationId": "DataWipeController_executeTargetOrgWipe_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "🚨 DANGER: Execute wipe for target organization (ad6fb6dd-fa6f-46c5-ba76-9a2e5c6bcbcc)",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/data-wipe/stats/target-organization": {
+      "get": {
+        "description": "Get current statistics for the organization ID specified in the task.",
+        "operationId": "DataWipeController_getTargetOrgStats_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get statistics for target organization (ad6fb6dd-fa6f-46c5-ba76-9a2e5c6bcbcc)",
+        "tags": [
+          "Data Wipe Operations"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/check-overdue": {
+      "post": {
+        "operationId": "ChatController_checkOverdueSessions_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/force-activate": {
+      "post": {
+        "operationId": "ChatController_forceActivateSession_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/ably-token": {
+      "get": {
+        "operationId": "ChatController_getAblyToken_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/messages": {
+      "post": {
+        "operationId": "ChatController_sendMessage_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/messages/upload": {
+      "post": {
+        "operationId": "ChatController_sendFileMessage_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/history": {
+      "get": {
+        "operationId": "ChatController_getChatHistory_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/histories": {
+      "get": {
+        "operationId": "ChatController_getChatHistories_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/active": {
+      "get": {
+        "operationId": "ChatController_getActiveSessions_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/typing": {
+      "post": {
+        "operationId": "ChatController_sendTypingIndicator_v1",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/unread-count/total": {
+      "get": {
+        "operationId": "ChatController_getTotalUnreadCount_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/unread-count": {
+      "get": {
+        "operationId": "ChatController_getUnreadMessageCount_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/session/{sessionId}/attachments": {
+      "get": {
+        "operationId": "ChatController_getAttachmentsBySessionId_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/end": {
+      "put": {
+        "operationId": "ChatController_endChatSession_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/enable": {
+      "put": {
+        "operationId": "ChatController_enableChatSession_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/status": {
+      "get": {
+        "operationId": "ChatController_getChatSessionStatus_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/read": {
+      "put": {
+        "operationId": "ChatController_markMessagesAsRead_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/presence": {
+      "put": {
+        "operationId": "ChatController_updateUserPresence_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/messages/read": {
+      "put": {
+        "operationId": "ChatController_markMessageAsRead_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/channel-history": {
+      "get": {
+        "operationId": "ChatController_getChannelHistory_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/chat/sessions/{sessionId}/upload-url": {
+      "post": {
+        "operationId": "ChatController_generatePresignedUploadUrl_v1",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Chat"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_getHealth_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/v1/search-index/upsert": {
+      "post": {
+        "description": "Store or update HMAC token hashes for searchable encryption. This endpoint should be called after sending a message to enable search functionality.",
+        "operationId": "SearchIndexController_upsertTokenHashes_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token hashes upserted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "messageId": {
+                          "type": "string",
+                          "example": "123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        "tokenCount": {
+                          "type": "number",
+                          "example": 15
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have access to this session"
+          },
+          "404": {
+            "description": "Message not found or does not belong to the specified session"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Upsert token hashes for a message",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    },
+    "/api/v1/search-index/query": {
+      "post": {
+        "description": "Find messages that contain all the provided trapdoors (HMAC query hashes). Returns candidate message IDs that should be decrypted client-side for verification.",
+        "operationId": "SearchIndexController_queryMessages_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Search completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "messageIds": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "123e4567-e89b-12d3-a456-426614174000",
+                            "123e4567-e89b-12d3-a456-426614174002"
+                          ]
+                        },
+                        "total": {
+                          "type": "number",
+                          "example": 42
+                        },
+                        "hasMore": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have access to the specified session"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Search messages using trapdoors",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    },
+    "/api/v1/search-index/remove": {
+      "delete": {
+        "description": "Remove all token hashes associated with a specific message. This should be called when a message is deleted.",
+        "operationId": "SearchIndexController_removeTokenHashes_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token hashes removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "messageId": {
+                          "type": "string",
+                          "example": "123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        "removedCount": {
+                          "type": "number",
+                          "example": 15
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "User does not have access to this message"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Remove token hashes for a message",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    },
+    "/api/v1/search-index/bulk-remove": {
+      "delete": {
+        "description": "Remove token hashes for multiple messages at once. Useful for cleanup operations.",
+        "operationId": "SearchIndexController_bulkRemoveTokenHashes_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token hashes bulk removed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "processedCount": {
+                          "type": "number",
+                          "example": 5
+                        },
+                        "totalRemoved": {
+                          "type": "number",
+                          "example": 75
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bulk remove token hashes for multiple messages",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    },
+    "/api/v1/search-index/update": {
+      "put": {
+        "description": "Replace existing token hashes for a message with new ones. This should be called when a message is edited.",
+        "operationId": "SearchIndexController_updateTokenHashes_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Token hashes updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "messageId": {
+                          "type": "string",
+                          "example": "123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        "previousCount": {
+                          "type": "number",
+                          "example": 12
+                        },
+                        "newCount": {
+                          "type": "number",
+                          "example": 18
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Message not found or user does not have access"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update token hashes for a message",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    },
+    "/api/v1/search-index/stats": {
+      "get": {
+        "description": "Retrieve statistics about the search index. Useful for monitoring and debugging.",
+        "operationId": "SearchIndexController_getSearchIndexStats_v1",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Search index statistics retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "totalTokenHashes": {
+                          "type": "number",
+                          "example": 15420
+                        },
+                        "uniqueMessages": {
+                          "type": "number",
+                          "example": 1250
+                        },
+                        "uniqueUsers": {
+                          "type": "number",
+                          "example": 85
+                        },
+                        "keyVersions": {
+                          "type": "array",
+                          "items": {
+                            "type": "number"
+                          },
+                          "example": [
+                            1,
+                            2
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get search index statistics",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    },
+    "/api/v1/search-index/cleanup": {
+      "delete": {
+        "description": "Remove token hashes older than the specified number of days. This is a maintenance operation.",
+        "operationId": "SearchIndexController_cleanupOldTokenHashes_v1",
+        "parameters": [
+          {
+            "name": "olderThanDays",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Old token hashes cleaned up successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "success"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "removedCount": {
+                          "type": "number",
+                          "example": 1245
+                        },
+                        "cutoffDate": {
+                          "type": "string",
+                          "example": "2024-06-01T00:00:00.000Z"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cleanup old token hashes",
+        "tags": [
+          "Search Index"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Ruang Diri API",
+    "description": "API documentation for Ruang Diri application, all the services belongs to PT. Wong Makmur Sejati",
+    "version": "1.0",
+    "contact": {
+      "name": "Support Team",
+      "url": "https://ruangdiri.id",
+      "email": "support@ruangdiri.id"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    },
+    "termsOfService": "https://ruangdiri.id/terms"
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Enter your JWT token here"
+      }
+    },
+    "schemas": {
+      "LoginRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword123"
+          },
+          "rememberMe": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR..."
+          },
+          "message": {
+            "type": "string",
+            "example": "Login successful"
+          }
+        },
+        "required": [
+          "accessToken",
+          "message"
+        ]
+      },
+      "ClientRegisterRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "securePassword123"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "Asia/Jakarta"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "fullName",
+          "timezone"
+        ]
+      },
+      "ClientRegisterResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Registration successful"
+          },
+          "data": {
+            "type": "object",
+            "example": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "email": "user@example.com",
+              "fullName": "John Doe",
+              "role": "client"
+            }
+          }
+        },
+        "required": [
+          "message",
+          "data"
+        ]
+      },
+      "ForgotPasswordRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "user@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ForgotPasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Password reset email sent"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "ResetPasswordRequestDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "user@example.com"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "newSecurePassword123"
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "ResetPasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "Password reset successfully"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "OrganizationDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "Jl. Sudirman No. 123, Jakarta"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+62 812-3456-7890"
+          },
+          "profilePicture": {
+            "type": "string",
+            "example": "https://example.com/profile.jpg"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "SMA Negeri 1 Jakarta"
+          }
+        },
+        "required": [
+          "address",
+          "phone",
+          "profilePicture",
+          "fullName"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The unique identifier of the user",
+            "example": "9b3ac4fd-7790-40d1-9e8d-174a250b6799"
+          },
+          "email": {
+            "type": "string",
+            "description": "The email address of the user",
+            "example": "school@ruangdiri.com"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "The full name of the user",
+            "example": "SMAN 123 3211"
+          },
+          "role": {
+            "description": "User role",
+            "example": [
+              "organization",
+              "student",
+              "employee",
+              "psychologist",
+              "client"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "organization": {
+            "description": "Organization details if user is an organization",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OrganizationDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "fullName",
+          "role"
+        ]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "description": "The current password of the user",
+            "example": "currentPassword123"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "The new password to set",
+            "example": "newSecurePassword456"
+          }
+        },
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ]
+      },
+      "ChangePasswordResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status of the password change operation",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "description": "Message about the password change operation",
+            "example": "Password changed successfully"
+          }
+        },
+        "required": [
+          "status",
+          "message"
+        ]
+      },
+      "OrganizationMetadataDto": {
+        "type": "object",
+        "properties": {
+          "totalData": {
+            "type": "number"
+          },
+          "totalPage": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "limit": {
+            "type": "number"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          },
+          "byGender": {
+            "type": "object",
+            "properties": {
+              "male": {
+                "type": "number"
+              },
+              "female": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "required": [
+          "totalData",
+          "totalPage",
+          "page",
+          "limit",
+          "hasNextPage",
+          "byGender"
+        ]
+      },
+      "SchoolDocsResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "students": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "26248af3-7b92-40f1-9b78-aa96efbd0cde"
+                    },
+                    "fullName": {
+                      "type": "string",
+                      "example": "Backend"
+                    },
+                    "classroom": {
+                      "type": "string",
+                      "example": "X"
+                    },
+                    "grade": {
+                      "type": "string",
+                      "example": "A"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "enum": [
+                        "male",
+                        "female"
+                      ],
+                      "example": "male"
+                    },
+                    "nis": {
+                      "type": "string",
+                      "example": "123"
+                    },
+                    "screeningStatus": {
+                      "type": "string",
+                      "enum": [
+                        "monitored",
+                        "at_risk",
+                        "stable",
+                        "not_screened"
+                      ],
+                      "example": "monitored"
+                    },
+                    "counselingStatus": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "iqScore": {
+                      "type": "number",
+                      "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/OrganizationMetadataDto"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "metadata",
+          "message"
+        ]
+      },
+      "CompanyDocsResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "employees": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "e1234567-89ab-cdef-0123-456789abcdef"
+                    },
+                    "fullName": {
+                      "type": "string",
+                      "example": "John Doe"
+                    },
+                    "department": {
+                      "type": "string",
+                      "example": "HR"
+                    },
+                    "position": {
+                      "type": "string",
+                      "example": "Manager"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "enum": [
+                        "male",
+                        "female"
+                      ],
+                      "example": "male"
+                    },
+                    "age": {
+                      "type": "number",
+                      "nullable": true,
+                      "example": 30
+                    },
+                    "yearsOfService": {
+                      "type": "number",
+                      "example": 5
+                    },
+                    "screeningStatus": {
+                      "type": "string",
+                      "enum": [
+                        "monitored",
+                        "at_risk",
+                        "stable",
+                        "not_screened"
+                      ],
+                      "example": "monitored"
+                    },
+                    "counselingStatus": {
+                      "type": "boolean",
+                      "example": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/OrganizationMetadataDto"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "metadata",
+          "message"
+        ]
+      },
+      "EmployeeRolesDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Information about roles and departments of employees",
+            "example": {
+              "departments": [
+                "Human Resources",
+                "Engineering",
+                "Marketing",
+                "Sales",
+                "Finance"
+              ],
+              "position": [
+                "Manager",
+                "Software Engineer",
+                "Marketing Specialist",
+                "Sales Executive",
+                "Accountant"
+              ]
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "EmployeeDashboardMetricsDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Metrics for employees in a specific year, and department",
+            "example": {
+              "summary": {
+                "atRisk": {
+                  "count": 2,
+                  "total": 3
+                },
+                "notScreened": {
+                  "count": 0,
+                  "total": 3
+                },
+                "notCounseled": {
+                  "count": 0,
+                  "total": 2
+                }
+              },
+              "mentalHealth": {
+                "overall": {
+                  "atRisk": 0,
+                  "monitored": 1,
+                  "stable": 1,
+                  "notScreened": 0
+                },
+                "byMonth": [
+                  {
+                    "month": "Feb",
+                    "atRisk": 0,
+                    "monitored": 0,
+                    "stable": 1
+                  },
+                  {
+                    "month": "Mar",
+                    "atRisk": 2,
+                    "monitored": 1,
+                    "stable": 1
+                  },
+                  {
+                    "month": "Apr",
+                    "atRisk": 1,
+                    "monitored": 0,
+                    "stable": 0
+                  },
+                  {
+                    "month": "May",
+                    "atRisk": 0,
+                    "monitored": 1,
+                    "stable": 1
+                  }
+                ]
+              },
+              "status": {
+                "screening": {
+                  "completed": 2,
+                  "notCompleted": 1
+                },
+                "counseling": {
+                  "completed": 0,
+                  "notCompleted": 0
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "EmployeeDetailDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Detailed information about an employee",
+            "example": {
+              "id": "7665717b-031b-4508-817c-92aa0423c09b",
+              "email": "employee5@example.com",
+              "profilePicture": "https://b1fbf745df68d22238d898899f1e0a87.serveo.net/uploads/organizations/profilePicture-1747884491936-759900585.jpg",
+              "fullName": "Lewis Hamilton",
+              "role": "employee",
+              "employeeProfile": {
+                "employeeId": "",
+                "department": "Sales",
+                "position": "Engineer",
+                "gender": "male",
+                "age": 26,
+                "yearsOfService": 1,
+                "screeningStatus": "stable",
+                "counselingStatus": false,
+                "guardianName": "Parent 5",
+                "guardianContact": "081231001",
+                "birthDate": "2002-01-01T00:00:00.000Z",
+                "birthPlace": "City Center"
+              },
+              "mentalHealthHistories": [
+                {
+                  "id": "f69db26f-befc-47a4-8e23-61352e1374b8",
+                  "type": "screening",
+                  "date": "2025-03-09T04:30:02.459Z",
+                  "status": "stable",
+                  "notes": null
+                },
+                {
+                  "id": "7a796386-576f-438f-a3a1-d147ea95ace0",
+                  "type": "screening",
+                  "date": "2025-03-05T07:30:59.467Z",
+                  "status": "stable",
+                  "notes": null
+                },
+                {
+                  "id": "2ceca994-4b97-41dc-ae70-c85da43e123d",
+                  "type": "screening",
+                  "date": "2025-05-11T07:30:59.467Z",
+                  "status": "monitored",
+                  "notes": null
+                },
+                {
+                  "id": "2f43dbcd-198d-4211-b4b3-962b114b6f97",
+                  "type": "screening",
+                  "date": "2025-04-04T07:30:59.467Z",
+                  "status": "monitored",
+                  "notes": null
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "StudentAcademicInfoDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Information about grades and classrooms of students",
+            "example": {
+              "classrooms": [
+                "X",
+                "XI",
+                "XII"
+              ],
+              "grades": [
+                "A",
+                "B",
+                "C",
+                "D"
+              ]
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "StudentDashboardMetricsDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Metrics for students in a specific year, grade, and classroom",
+            "example": {
+              "summary": {
+                "atRisk": {
+                  "count": 23,
+                  "total": 36
+                },
+                "notScreened": {
+                  "count": 0,
+                  "total": 36
+                },
+                "notCounseled": {
+                  "count": 1,
+                  "total": 23
+                }
+              },
+              "mentalHealth": {
+                "overall": {
+                  "atRisk": 7,
+                  "monitored": 12,
+                  "stable": 2,
+                  "notScreened": 10
+                },
+                "byMonth": [
+                  {
+                    "month": "Feb",
+                    "atRisk": 0,
+                    "monitored": 0,
+                    "stable": 1
+                  },
+                  {
+                    "month": "Mar",
+                    "atRisk": 2,
+                    "monitored": 1,
+                    "stable": 2
+                  },
+                  {
+                    "month": "Apr",
+                    "atRisk": 1,
+                    "monitored": 0,
+                    "stable": 1
+                  }
+                ]
+              },
+              "status": {
+                "screening": {
+                  "completed": 17,
+                  "notCompleted": 19
+                },
+                "counseling": {
+                  "completed": 0,
+                  "notCompleted": 7
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "StudentDetailDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "object",
+            "description": "Detailed information about a student",
+            "example": {
+              "id": "63d4405c-d2fd-4bd8-8afe-90bb67cbbf5c",
+              "email": "student13@example.com",
+              "profilePicture": "https://improved-mammal-humane.ngrok-free.app/uploads/students/profilePicture-1747900509537-783722953.jpeg",
+              "fullName": "Ursasi",
+              "role": "student",
+              "studentProfile": {
+                "grade": "D",
+                "classroom": "XI",
+                "gender": "female",
+                "nis": "11335789",
+                "screeningStatus": "stable",
+                "counselingStatus": false,
+                "iqScore": 190,
+                "guardianName": "Parent 13",
+                "guardianContact": null,
+                "birthDate": "2009-01-01T00:00:00.000Z",
+                "birthPlace": "City Center",
+                "iqCategory": "very_below_average"
+              },
+              "mentalHealthHistories": [
+                {
+                  "id": "951df749-c5b7-4f13-9bb0-0d3a4005ef38",
+                  "type": "screening",
+                  "date": "2025-03-22T07:37:56.211Z",
+                  "status": "stable",
+                  "notes": null
+                },
+                {
+                  "id": "3a13391a-bc68-4797-8c91-83ce5d7f4e40",
+                  "type": "screening",
+                  "date": "2025-04-15T07:30:59.466Z",
+                  "status": "not_screened",
+                  "notes": null
+                },
+                {
+                  "id": "d19eb847-345f-41be-8112-52c13f8f908a",
+                  "type": "screening",
+                  "date": "2025-03-26T07:30:59.466Z",
+                  "status": "stable",
+                  "notes": null
+                }
+              ]
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      }
+    }
+  }
+}

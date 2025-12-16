@@ -1,0 +1,1 @@
+ALTER TABLE "screenings" ALTER COLUMN "screening_status" DROP DEFAULT;

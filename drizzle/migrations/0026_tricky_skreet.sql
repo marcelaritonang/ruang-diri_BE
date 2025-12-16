@@ -1,0 +1,1 @@
+ALTER TABLE "psychologist_profiles" ADD COLUMN "location" varchar(255);

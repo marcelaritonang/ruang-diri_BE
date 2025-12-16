@@ -1,0 +1,1 @@
+ALTER TYPE "public"."location_counseling_type" ADD VALUE 'chat';

@@ -1,0 +1,1 @@
+ALTER TABLE "psychologist_profiles" ADD COLUMN "max_concurrent_sessions" integer DEFAULT 2;

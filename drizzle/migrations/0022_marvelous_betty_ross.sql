@@ -1,0 +1,2 @@
+ALTER TABLE "users_schedules" ADD COLUMN "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL;--> statement-breakpoint
+ALTER TABLE "users_schedules" ADD COLUMN "created_at" timestamp DEFAULT now() NOT NULL;

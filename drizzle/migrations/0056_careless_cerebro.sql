@@ -1,0 +1,1 @@
+ALTER TABLE "counselings" ALTER COLUMN "status" SET DEFAULT 'scheduled';

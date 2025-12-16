@@ -1,0 +1,3 @@
+ALTER TABLE "organizations" ADD CONSTRAINT "remaining_quota_must_be_non_negative" CHECK ("organizations"."remaining_quota" >= 0);--> statement-breakpoint
+ALTER TABLE "organizations" ADD CONSTRAINT "total_quota_must_be_non_negative" CHECK ("organizations"."total_quota" >= 0);--> statement-breakpoint
+ALTER TABLE "organizations" ADD CONSTRAINT "remaining_quota_must_not_exceed_total_quota" CHECK ("organizations"."remaining_quota" <= "organizations"."total_quota");

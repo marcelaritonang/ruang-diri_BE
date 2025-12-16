@@ -1,0 +1,1 @@
+ALTER TYPE "public"."counseling_status_appointment" ADD VALUE 'rescheduled';

@@ -1,0 +1,1 @@
+ALTER TABLE "schedules" ADD COLUMN "time" time DEFAULT '00:00' NOT NULL

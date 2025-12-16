@@ -1,0 +1,1 @@
+ALTER TABLE "counselings" ADD COLUMN "created_at" timestamp DEFAULT now();

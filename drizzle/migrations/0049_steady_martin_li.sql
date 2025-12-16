@@ -1,0 +1,1 @@
+DROP TABLE "psychologist_counseling_quotas" CASCADE;

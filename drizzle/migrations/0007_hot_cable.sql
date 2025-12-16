@@ -1,0 +1,1 @@
+ALTER TABLE "schedules" ADD COLUMN "notification_offset" integer NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE "schedules" ALTER COLUMN "description" SET DATA TYPE varchar;

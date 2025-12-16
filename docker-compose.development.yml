@@ -1,0 +1,29 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.development
+    ports:
+      - '3132:3132'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env.development
+    depends_on:
+      - db
+    command: pnpm start:dev
+
+  db:
+    image: postgres:15
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=app_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata: {}
