@@ -20,6 +20,8 @@ export class CorsConfig {
         'https://deprived-sara-illegitimately.ngrok-free.dev',
         // ✅ ADD: Vercel production URL
         'https://ruang-diri.vercel.app',
+        // ✅ ADD: Vercel preview URLs (for branch deploys)
+        /https:\/\/.*\.vercel\.app$/,
       ],
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
       preflightContinue: false,
