@@ -144,6 +144,7 @@ export class AuthService {
           password: hashedPassword,
           fullName: registerDto.fullName,
           role: userRole,
+          organizationId: registerDto.organizationId || null,  // ✅ Set to null, will be assigned later
           timezone: registerDto.timezone,
           osName: deviceInfo.osName,
           deviceType: deviceInfo.deviceType,
@@ -154,7 +155,7 @@ export class AuthService {
         })
         .returning();
 
-      // Create profile
+      // Create profile based on role
       let profile = null;
 
       if (userRole === 'client') {
@@ -171,8 +172,8 @@ export class AuthService {
           .insert(studentProfiles)
           .values({
             userId: newUser.id,
-            gender: 'male',         // ✅ Use 'male' or 'female'
-            isExternal: false,      // ✅ Required
+            gender: 'male',
+            isExternal: false,
             createdAt: new Date(),
             updatedAt: new Date(),
           })
@@ -182,8 +183,8 @@ export class AuthService {
           .insert(employeeProfiles)
           .values({
             userId: newUser.id,
-            gender: 'male',         // ✅ Use 'male' or 'female'
-            isExternal: false,      // ✅ Required
+            gender: 'male',
+            isExternal: false,
             createdAt: new Date(),
             updatedAt: new Date(),
           })
@@ -193,13 +194,15 @@ export class AuthService {
           .insert(psychologistProfiles)
           .values({
             userId: newUser.id,
-            gender: 'male',         // ✅ Use 'male' or 'female'
-            isExternal: false,      // ✅ Required
+            gender: 'male',
+            isExternal: false,
             createdAt: new Date(),
             updatedAt: new Date(),
           })
           .returning();
       }
+      // ✅ For 'organization' role: no profile, organizationId null
+      // Will be assigned later via admin panel or separate endpoint
 
       return { user: newUser, profile };
     },

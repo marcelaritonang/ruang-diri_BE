@@ -169,68 +169,58 @@ export class UsersRepository {
   }
 
   async updateUserProfile({
-    userId,
-    updateData,
-    profileTable,
-    useUserId,
-  }: {
-    userId: string;
-    updateData: {
-      details?: Record<string, any>;
-      generalData?: Record<string, any>;
-    };
-    profileTable:
-      | typeof studentProfiles
-      | typeof employeeProfiles
-      | typeof psychologistProfiles
-      | typeof organizations
-      | typeof clientProfiles;
-    useUserId: boolean;
-  }) {
-    return await this.db.transaction(async (tx) => {
-      let filterField: any;
-      let filterValue: string;
+  userId,
+  updateData,
+  profileTable,
+  useUserId,
+}: {
+  userId: string;
+  updateData: {
+    details?: Record<string, any>;
+    generalData?: Record<string, any>;
+  };
+  profileTable:
+    | typeof studentProfiles
+    | typeof employeeProfiles
+    | typeof psychologistProfiles
+    | typeof organizations
+    | typeof clientProfiles;
+  useUserId: boolean;
+}) {
+  return await this.db.transaction(async (tx) => {
+    let filterField: any;
+    let filterValue: string;
 
-      if (useUserId) {
-        const userIdCol = (profileTable as any).userId;
+    if (useUserId) {
+      const userIdCol = (profileTable as any).userId;
 
-        if (!userIdCol) {
-          throw new ConflictException(
-            'useUserId is true but this table has no userId column',
-          );
-        }
-
-        filterField = userIdCol;
-        filterValue = userId;
-      } else {
-        const [userRow] = await tx
-          .select({ organizationId: users.organizationId })
-          .from(users)
-          .where(eq(users.id, userId));
-
-        if (!userRow?.organizationId) {
-          throw new NotFoundException(`User ${userId} has no organization`);
-        }
-
-        filterField = organizations.id;
-        filterValue = userRow.organizationId;
+      if (!userIdCol) {
+        throw new ConflictException(
+          'useUserId is true but this table has no userId column',
+        );
       }
 
-      const { details, generalData } = updateData;
+      filterField = userIdCol;
+      filterValue = userId;
+    } else {
+      // ✅ FIXED: Check if organization profile needs updating
+      const [userRow] = await tx
+        .select({ organizationId: users.organizationId })
+        .from(users)
+        .where(eq(users.id, userId));
 
-      const userPayload = this.buildSetPayload(users, generalData ?? {});
-      const profilePayload = this.buildSetPayload(profileTable, details ?? {});
+      // ✅ NEW: If no organizationId, skip profile update (only update users table)
+      if (!userRow?.organizationId) {
+        console.log(`⚠️ User ${userId} has no organization - skipping profile table update`);
+        
+        // Only update users table, skip profile table
+        const { generalData } = updateData;
+        const userPayload = this.buildSetPayload(users, generalData ?? {});
 
-      if (!userPayload && !profilePayload) {
-        throw new ConflictException('No valid update data provided');
-      }
+        if (!userPayload) {
+          throw new ConflictException('No valid update data provided');
+        }
 
-      const result: {
-        users?: any;
-        profile?: any;
-      } = {};
-
-      if (userPayload) {
         const [updatedUser] = await tx
           .update(users)
           .set(userPayload)
@@ -245,21 +235,57 @@ export class UsersRepository {
           restGeneralData.isOnboarded = false;
         }
 
-        result.users = restGeneralData;
+        return { users: restGeneralData };
       }
 
-      if (profilePayload) {
-        const [updatedProfile] = await tx
-          .update(profileTable)
-          .set(profilePayload)
-          .where(eq(filterField, filterValue))
-          .returning();
-        result.profile = updatedProfile;
+      filterField = organizations.id;
+      filterValue = userRow.organizationId;
+    }
+
+    const { details, generalData } = updateData;
+
+    const userPayload = this.buildSetPayload(users, generalData ?? {});
+    const profilePayload = this.buildSetPayload(profileTable, details ?? {});
+
+    if (!userPayload && !profilePayload) {
+      throw new ConflictException('No valid update data provided');
+    }
+
+    const result: {
+      users?: any;
+      profile?: any;
+    } = {};
+
+    if (userPayload) {
+      const [updatedUser] = await tx
+        .update(users)
+        .set(userPayload)
+        .where(eq(users.id, userId))
+        .returning();
+
+      const { password, lastPassword, ...restGeneralData } = updatedUser;
+
+      if (userPayload.onboarded === '1') {
+        restGeneralData.isOnboarded = true;
+      } else if (userPayload.onboarded === '0') {
+        restGeneralData.isOnboarded = false;
       }
 
-      return result;
-    });
-  }
+      result.users = restGeneralData;
+    }
+
+    if (profilePayload) {
+      const [updatedProfile] = await tx
+        .update(profileTable)
+        .set(profilePayload)
+        .where(eq(filterField, filterValue))
+        .returning();
+      result.profile = updatedProfile;
+    }
+
+    return result;
+  });
+}
 
   async updateUserFullName(tx: any, userId: string, fullName: string) {
     await tx

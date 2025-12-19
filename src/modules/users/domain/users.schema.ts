@@ -108,7 +108,8 @@ export const ClientRegister = z.object({
       return checkTimezone(val);
     }),
   // ✅ ADD THIS:
-  role: z.enum(['client', 'student', 'employee', 'psychologist']).optional().default('client'),
+    role: z.enum(['client', 'student', 'employee', 'psychologist','organization']).optional().default('client'),
+    organizationId: z.string().uuid().optional(),
 });
 
 export type User = z.infer<typeof UserSelectSchema>;
