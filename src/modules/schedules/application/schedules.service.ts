@@ -3,6 +3,7 @@ import {
   Logger,
   NotFoundException,
   BadRequestException,
+  Optional,
 } from '@nestjs/common';
 
 import { type Success, SuccessResponse } from '@/common/utils/response.util';
@@ -35,8 +36,8 @@ export class SchedulesService {
   constructor(
     private readonly schedulesRepository: SchedulesRepository,
     private readonly notificationsService: NotificationsService,
-    private readonly zoomMeetingQueue: ZoomMeetingQueue,
     private readonly transactionService: TransactionService,
+    @Optional() private readonly zoomMeetingQueue?: ZoomMeetingQueue,
   ) {}
 
   async createSchedules(
@@ -109,10 +110,16 @@ export class SchedulesService {
         result.every((schedule) => schedule.isNew) &&
         result.length > 0
       ) {
-        for (const { id: scheduleId, startDateTime } of result) {
-          await this.zoomMeetingQueue.counselingLinkGeneration(
-            scheduleId,
-            startDateTime,
+        if (this.zoomMeetingQueue) {
+          for (const { id: scheduleId, startDateTime } of result) {
+            await this.zoomMeetingQueue.counselingLinkGeneration(
+              scheduleId,
+              startDateTime,
+            );
+          }
+        } else {
+          this.logger.warn(
+            'ZoomMeetingQueue not available; skipping Zoom counseling link generation',
           );
         }
       }
@@ -256,10 +263,16 @@ export class SchedulesService {
           updated.type === 'counseling' &&
           updated
         ) {
-          await this.zoomMeetingQueue.counselingLinkGeneration(
-            updated.id,
-            updated.startDateTime,
-          );
+          if (this.zoomMeetingQueue) {
+            await this.zoomMeetingQueue.counselingLinkGeneration(
+              updated.id,
+              updated.startDateTime,
+            );
+          } else {
+            this.logger.warn(
+              `ZoomMeetingQueue not available; skipping Zoom job for schedule ${updated.id}`,
+            );
+          }
         }
 
         if (dto.notificationOffset) {

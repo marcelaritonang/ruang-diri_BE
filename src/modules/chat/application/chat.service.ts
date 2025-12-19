@@ -4,6 +4,8 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Inject,
+  Optional,
 } from '@nestjs/common';
 
 import { SuccessResponse } from '@/common/utils/response.util';
@@ -36,7 +38,8 @@ export class ChatService {
     private readonly chatRepository: ChatRepository,
     private readonly ablyService: AblyService,
     private readonly counselingsRepository: CounselingsRepository,
-    private readonly chatAutomationQueue: ChatAutomationQueue,
+    @Optional() @Inject(ChatAutomationQueue)
+    private readonly chatAutomationQueue: ChatAutomationQueue | null,
     private readonly usersRepository: UsersRepository,
     private readonly cloudStorageService: CloudStorageService,
   ) {}
@@ -240,12 +243,16 @@ export class ChatService {
           new Date(session.scheduledAt).getTime() + 60 * 60 * 1000,
         ); // 1 hour from start
         const userTimezone = await this.getUserTimezone(session.clientId);
-        await this.chatAutomationQueue.scheduleAutoEndAt(
-          session.id,
-          psychologist?.fullName || 'Psikolog',
-          endTime,
-          userTimezone,
-        );
+        if (this.chatAutomationQueue) {
+          await this.chatAutomationQueue.scheduleAutoEndAt(
+            session.id,
+            psychologist?.fullName || 'Psikolog',
+            endTime,
+            userTimezone,
+          );
+        } else {
+          this.logger.warn(`Queue not available - skipping auto-end schedule for session ${session.id}`);
+        }
       }
 
       if (overdueSessions.length > 0) {
@@ -525,10 +532,14 @@ export class ChatService {
         },
       );
 
-      await this.chatAutomationQueue.removeAutoEnd(sessionId);
-      this.logger.log(
-        `Cancelled auto-end job for manually ended session ${sessionId}`,
-      );
+      if (this.chatAutomationQueue) {
+        await this.chatAutomationQueue.removeAutoEnd(sessionId);
+        this.logger.log(
+          `Cancelled auto-end job for manually ended session ${sessionId}`,
+        );
+      } else {
+        this.logger.warn(`Queue not available - skipping auto-end removal for session ${sessionId}`);
+      }
 
       await this.ablyService.publishSessionStatus(sessionId, 'completed', [
         session.clientId,
@@ -638,17 +649,21 @@ export class ChatService {
           new Date(session.scheduledAt).getTime() + 60 * 60 * 1000,
         );
         const userTimezone = await this.getUserTimezone(session.clientId);
-        try {
-          await this.chatAutomationQueue.scheduleAutoEndAt(
-            sessionId,
-            psychologist?.fullName || 'Psikolog',
-            endTime,
-            userTimezone,
-          );
-        } catch (error) {
-          this.logger.warn(
-            `Failed to schedule auto-end for session ${sessionId}: ${error.message}`,
-          );
+        if (this.chatAutomationQueue) {
+          try {
+            await this.chatAutomationQueue.scheduleAutoEndAt(
+              sessionId,
+              psychologist?.fullName || 'Psikolog',
+              endTime,
+              userTimezone,
+            );
+          } catch (error) {
+            this.logger.warn(
+              `Failed to schedule auto-end for session ${sessionId}: ${error.message}`,
+            );
+          }
+        } else {
+          this.logger.warn(`Queue not available - skipping auto-end schedule for session ${sessionId}`);
         }
 
         const updatedSession =

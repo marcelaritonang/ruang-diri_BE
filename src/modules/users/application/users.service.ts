@@ -252,139 +252,147 @@ export class UsersService {
   }
 
   async updateUserProfile(
-    updateData: Record<string, any>,
-    currentUser: IUserRequest['user'],
-  ) {
-    console.log('📥 [Service] Raw data:', JSON.stringify(updateData, null, 2));
+  updateData: Record<string, any>,
+  currentUser: IUserRequest['user'],
+): Promise<SuccessResponse> {  // ✅ Return SuccessResponse
+  console.log('📥 [Service] Raw data:', JSON.stringify(updateData, null, 2));
+  console.log('👤 [Service] Current user:', { id: currentUser.id, role: currentUser.role });
 
-    // ✅ Handle nested structure from controller
-    let flatData = updateData;
-    if (updateData.generalData || updateData.details) {
-      flatData = {
-        ...updateData.details,
-        ...updateData.generalData,
-      };
-      console.log('🔄 [Service] Flattened data:', JSON.stringify(flatData, null, 2));
-    }
-
-    const profileTable = this.getProfileTableByRole(currentUser.role);
-    // const useUserId = currentUser.role !== 'organization';
-
-    // Validate data
-    const validatedData = this.validateUserUpdatePayload(currentUser.role, flatData);
-    console.log('🔍 [Service] After validation:', validatedData);
-
-    // ✅ TAMBAHAN: Separate base fields vs profile fields
-    const baseUserFields = {
-      fullName: validatedData.fullName,
-      email: validatedData.email,
-      profilePicture: validatedData.profilePicture,
-      isOnboarded: validatedData.isOnboarded,
+  // Handle nested structure
+  let flatData = updateData;
+  if (updateData.generalData || updateData.details) {
+    flatData = {
+      ...updateData.details,
+      ...updateData.generalData,
     };
+    console.log('🔄 [Service] Flattened data:', JSON.stringify(flatData, null, 2));
+  }
 
-    const profileFields: any = {};
-    Object.keys(validatedData).forEach(key => {
-      if (!['fullName', 'email', 'profilePicture', 'isOnboarded'].includes(key)) {
-        profileFields[key] = validatedData[key];
+  // Validate data
+  const validatedData = this.validateUserUpdatePayload(currentUser.role, flatData);
+  console.log('🔍 [Service] After validation:', validatedData);
+
+  // Separate fields
+  const baseUserFields: any = {};
+  const profileFields: any = {};
+  
+  Object.keys(validatedData).forEach(key => {
+    if (['fullName', 'email', 'profilePicture', 'isOnboarded'].includes(key)) {
+      if (validatedData[key] !== undefined) {
+        baseUserFields[key] = validatedData[key];
       }
-    });
-
-    // Remove undefined values from baseUserFields
-    Object.keys(baseUserFields).forEach(key =>
-      baseUserFields[key] === undefined && delete baseUserFields[key]
-    );
-
-    console.log('📊 [Service] Base fields:', baseUserFields);
-    console.log('📊 [Service] Profile fields:', profileFields);
-
-    // ✅ Update users table for base fields
-    if (Object.keys(baseUserFields).length > 0) {
-      console.log('🔍 [Service] Updating users table with:', baseUserFields);
-      await this.usersRepository.update(currentUser.id, baseUserFields);
+    } else if (validatedData[key] !== undefined) {
+      profileFields[key] = validatedData[key];
     }
+  });
 
-    // ✅ PERBAIKAN: Update profile table (handle organization differently!)
-    let profile;
+  console.log('📊 [Service] Base fields:', baseUserFields);
+  console.log('📊 [Service] Profile fields:', profileFields);
+
+  // Update users table
+  if (Object.keys(baseUserFields).length > 0) {
+    await this.usersRepository.update(currentUser.id, baseUserFields);
+    console.log('✅ [Service] Users table updated');
+  }
+
+  // Update profile table
+  if (Object.keys(profileFields).length > 0) {
+    const profileTable = this.getProfileTableByRole(currentUser.role);
     
-    if (Object.keys(profileFields).length > 0) {
+    if (profileTable) {
       if (currentUser.role === 'organization') {
-        // ✅ ORGANIZATION: Gunakan organizationId
-        console.log('🏢 [Service] Processing ORGANIZATION role');
-        
         const user = await this.usersRepository.findById(currentUser.id);
-        if (!user) {
-          throw new BadRequestException('User not found');
-        }
-        if (!user.organizationId) {
-          throw new BadRequestException('Organization ID not found for this user');
+        if (!user?.organizationId) {
+          throw new BadRequestException('Organization ID not found');
         }
         
-        console.log('🏢 [Service] Organization ID:', user.organizationId);
-        
-        profile = await this.usersRepository.updateUserProfile({
-          userId: user.organizationId,  // ⬅️ PAKAI ORGANIZATION ID!
+        await this.usersRepository.updateUserProfile({
+          userId: user.organizationId,
           updateData: profileFields,
           profileTable,
           useUserId: false,
         });
-        
-        console.log('✅ [Service] Organizations table updated');
-        
       } else {
-        // ✅ EMPLOYEE/STUDENT/PSYCHOLOGIST: Gunakan userId biasa
-        console.log(`👥 [Service] Processing ${currentUser.role.toUpperCase()} role`);
-        
-        profile = await this.usersRepository.updateUserProfile({
+        await this.usersRepository.updateUserProfile({
           userId: currentUser.id,
           updateData: profileFields,
           profileTable,
           useUserId: true,
         });
-        
-        console.log(`✅ [Service] ${currentUser.role} profile table updated`);
       }
-    }
-
-    this.logger.log(
-      `User profile updated successfully for user ID: ${currentUser.id}`,
-    );
-
-    return profile;
-  }
-
-  private getProfileTableByRole(role: string) {
-    switch (role) {
-      case 'student':
-        return studentProfiles;
-      case 'employee':
-        return employeeProfiles;
-      case 'psychologist':
-        return psychologistProfiles;
-      case 'organization':
-        return organizations;
-      default:
-        throw new BadRequestException('Invalid user role');
+      
+      console.log(`✅ [Service] Profile table updated`);
     }
   }
 
-  private getMergedUserUpdateSchema(role: string) {
-    switch (role) {
-      case 'student':
-        return baseUserUpdateSchema
-          .merge(studentUpdateSchema)
-          .merge(organizationUpdateSchema);
-      case 'employee':
-        return baseUserUpdateSchema
-          .merge(employeeUpdateSchema)
-          .merge(organizationUpdateSchema);
-      case 'psychologist':
-        return baseUserUpdateSchema
-          .merge(psychologistUpdateSchema)
-          .merge(organizationUpdateSchema);
-      default:
-        return baseUserUpdateSchema.merge(organizationUpdateSchema);
-    }
+  // ✅ CRITICAL: Fetch and return fresh user data
+  const freshUserData = await this.usersRepository.getUserProfile(currentUser.id);
+  
+  if (!freshUserData) {
+    throw new NotFoundException('User profile not found after update');
   }
+
+  console.log('🎯 [Service] Fresh user data:', {
+    id: freshUserData.id,
+    isOnboarded: freshUserData.isOnboarded,
+    role: freshUserData.role
+  });
+
+  this.logger.log(`Profile updated successfully for user ID: ${currentUser.id}`);
+
+  // ✅ Return proper response
+  return SuccessResponse.success(
+    freshUserData,
+    'Profile updated successfully'
+  );
+}
+
+// ✅ Also update these methods:
+private getProfileTableByRole(role: string) {
+  console.log('🔍 [getProfileTableByRole] Role:', role);
+  
+  switch (role) {
+    case 'student':
+      return studentProfiles;
+    case 'employee':
+      return employeeProfiles;
+    case 'psychologist':
+      return psychologistProfiles;
+    case 'organization':
+      return organizations;
+    case 'client':
+      console.log('⚠️ Client role - no profile table');
+      return null;
+    default:
+      console.log(`⚠️ Unknown role: ${role}`);
+      this.logger.warn(`Unknown role: ${role}`);
+      return null;
+  }
+}
+
+private getMergedUserUpdateSchema(role: string) {
+  switch (role) {
+    case 'student':
+      return baseUserUpdateSchema
+        .merge(studentUpdateSchema)
+        .merge(organizationUpdateSchema);
+    case 'employee':
+      return baseUserUpdateSchema
+        .merge(employeeUpdateSchema)
+        .merge(organizationUpdateSchema);
+    case 'psychologist':
+      return baseUserUpdateSchema
+        .merge(psychologistUpdateSchema)
+        .merge(organizationUpdateSchema);
+    case 'organization':
+      return baseUserUpdateSchema.merge(organizationUpdateSchema);
+    case 'client':
+      return baseUserUpdateSchema.merge(organizationUpdateSchema);
+    default:
+      this.logger.warn(`Unknown role: ${role}, using base schema`);
+      return baseUserUpdateSchema;
+  }
+}
 
   validateUserUpdatePayload(
     role: string,

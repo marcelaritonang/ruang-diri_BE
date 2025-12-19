@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 
 import type { Queue, Job } from 'bullmq';
@@ -13,9 +13,13 @@ export class ChatAutomationQueue {
   private readonly logger = new Logger(ChatAutomationQueue.name);
 
   constructor(
-    @InjectQueue(QUEUE_JOB.CHAT_AUTOMATION) private readonly queue: Queue,
+    @Optional() @InjectQueue(QUEUE_JOB.CHAT_AUTOMATION) private readonly queue: Queue | null,
     private readonly notificationGateway: NotificationGateway,
-  ) {}
+  ) {
+    if (!this.queue) {
+      this.logger.warn('ChatAutomationQueue initialized without Redis - automation disabled');
+    }
+  }
 
   async scheduleInitialMessage(
     sessionId: string,
@@ -23,7 +27,20 @@ export class ChatAutomationQueue {
     scheduledAt: Date,
     tzName = 'Asia/Jakarta',
     participants: { clientId: string; psychologistId: string },
-  ): Promise<Job> {
+  ): Promise<Job | null> {
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping initial message schedule for session ${sessionId}`);
+      // still notify clients via websocket/gateway
+      this.notificationGateway.sendChatNotification(participants, {
+        event: 'initial-message',
+        data: {
+          count: 1,
+          sessionId,
+        },
+      });
+      return null;
+    }
+
     const { delay, debug } = computeDelayMs(scheduledAt, tzName, 10);
 
     this.logger.log(
@@ -66,7 +83,19 @@ export class ChatAutomationQueue {
     scheduledAt: Date,
     tzName = 'Asia/Jakarta',
     participants: { clientId: string; psychologistId: string },
-  ): Promise<Job> {
+  ): Promise<Job | null> {
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping enable-chat schedule for session ${sessionId}`);
+      this.notificationGateway.sendChatNotification(participants, {
+        event: 'enable-chat',
+        data: {
+          count: 1,
+          sessionId,
+        },
+      });
+      return null;
+    }
+
     const { delay, debug } = computeDelayMs(scheduledAt, tzName, 0);
 
     this.logger.log(
@@ -108,7 +137,12 @@ export class ChatAutomationQueue {
     userFullname: string,
     endAt: Date,
     tzName: string,
-  ): Promise<Job> {
+  ): Promise<Job | null> {
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping auto-end schedule for session ${sessionId}`);
+      return null;
+    }
+
     const { delay, debug } = computeDelayMs(endAt, tzName, 0);
 
     this.logger.log(
@@ -138,6 +172,11 @@ export class ChatAutomationQueue {
   }
 
   async removeInitialMessage(sessionId: string): Promise<void> {
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping removeInitialMessage for session ${sessionId}`);
+      return;
+    }
+
     const jobId = `initial-message-${sessionId}`;
     const job = await this.queue.getJob(jobId);
     if (job) {
@@ -147,6 +186,11 @@ export class ChatAutomationQueue {
   }
 
   async removeEnableChat(sessionId: string): Promise<void> {
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping removeEnableChat for session ${sessionId}`);
+      return;
+    }
+
     const jobId = `enable-chat-${sessionId}`;
     const job = await this.queue.getJob(jobId);
     if (job) {
@@ -156,6 +200,11 @@ export class ChatAutomationQueue {
   }
 
   async removeAutoEnd(sessionId: string): Promise<void> {
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping auto-end removal for session ${sessionId}`);
+      return;
+    }
+
     const jobId = `auto-end-${sessionId}`;
     const job = await this.queue.getJob(jobId);
     if (job) {

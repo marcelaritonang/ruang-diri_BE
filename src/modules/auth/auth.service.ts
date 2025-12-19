@@ -27,6 +27,9 @@ import { ClientProfilesRepository } from '@/modules/clients/clients-profile.repo
 import { TransactionService } from '@/common/services/transaction.service';
 import { users } from '@/modules/users/domain/users.schema';
 import { clientProfiles } from '@/modules/clients/clients-profile.schema';
+import { employeeProfiles } from '@/modules/employees/domain/employees.schema';
+import { studentProfiles } from '@/modules/students/domain/student.schema';
+import { psychologistProfiles } from '@/modules/psychologists/psychologist-profile.schema';
 
 @Injectable()
 export class AuthService {
@@ -120,40 +123,42 @@ export class AuthService {
   }
 
   async registerClient(
-    registerDto: IClientRegister,
-    deviceInfo: ParsedDeviceInfo,
-  ): Promise<SuccessResponse> {
-    const existingUser = await this.usersService.findByEmail(registerDto.email);
-    if (existingUser) {
-      throw new BadRequestException('User with this email already exists');
-    }
+  registerDto: IClientRegister,
+  deviceInfo: ParsedDeviceInfo,
+): Promise<SuccessResponse> {
+  const existingUser = await this.usersService.findByEmail(registerDto.email);
+  if (existingUser) {
+    throw new BadRequestException('User with this email already exists');
+  }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+  const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+  const userRole = registerDto.role || 'client';
 
-    // Use transaction to ensure data consistency
-    const result = await this.transactionService.executeTransaction(
-      async ({ tx }) => {
-        // Create user
-        const [newUser] = await tx
-          .insert(users)
-          .values({
-            email: registerDto.email,
-            password: hashedPassword,
-            fullName: registerDto.fullName,
-            role: 'client',
-            timezone: registerDto.timezone,
-            osName: deviceInfo.osName,
-            deviceType: deviceInfo.deviceType,
-            isActive: true,
-            isOnboarded: false,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          })
-          .returning();
+  const result = await this.transactionService.executeTransaction(
+    async ({ tx }) => {
+      // Create user
+      const [newUser] = await tx
+        .insert(users)
+        .values({
+          email: registerDto.email,
+          password: hashedPassword,
+          fullName: registerDto.fullName,
+          role: userRole,
+          timezone: registerDto.timezone,
+          osName: deviceInfo.osName,
+          deviceType: deviceInfo.deviceType,
+          isActive: true,
+          isOnboarded: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
 
-        // Create client profile with minimal data
-        const [createdClientProfile] = await tx
+      // Create profile
+      let profile = null;
+
+      if (userRole === 'client') {
+        [profile] = await tx
           .insert(clientProfiles)
           .values({
             userId: newUser.id,
@@ -161,10 +166,44 @@ export class AuthService {
             updatedAt: new Date(),
           })
           .returning();
+      } else if (userRole === 'student') {
+        [profile] = await tx
+          .insert(studentProfiles)
+          .values({
+            userId: newUser.id,
+            gender: 'male',         // ✅ Use 'male' or 'female'
+            isExternal: false,      // ✅ Required
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+      } else if (userRole === 'employee') {
+        [profile] = await tx
+          .insert(employeeProfiles)
+          .values({
+            userId: newUser.id,
+            gender: 'male',         // ✅ Use 'male' or 'female'
+            isExternal: false,      // ✅ Required
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+      } else if (userRole === 'psychologist') {
+        [profile] = await tx
+          .insert(psychologistProfiles)
+          .values({
+            userId: newUser.id,
+            gender: 'male',         // ✅ Use 'male' or 'female'
+            isExternal: false,      // ✅ Required
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+      }
 
-        return { user: newUser, clientProfile: createdClientProfile };
-      },
-    );
+      return { user: newUser, profile };
+    },
+  );
 
     // Send welcome notification after successful registration
     await this.notificationsService.createNotification({
@@ -181,7 +220,7 @@ export class AuthService {
         id: result.user.id,
         email: result.user.email,
         fullName: result.user.fullName,
-        role: result.user.role,
+        role: result.user.role,  // ✅ Return actual role
       },
       'Registration successful',
     );

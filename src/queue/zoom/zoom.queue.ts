@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional, Inject } from '@nestjs/common'; // ← Add Optional, Inject
 import { InjectQueue } from '@nestjs/bullmq';
 
 import type { Queue, Job } from 'bullmq';
@@ -12,8 +12,13 @@ export class ZoomMeetingQueue {
   private readonly logger = new Logger(ZoomMeetingQueue.name);
 
   constructor(
-    @InjectQueue(QUEUE_JOB.ZOOM_MEETING) private readonly queue: Queue,
-  ) {}
+    @Optional() @InjectQueue(QUEUE_JOB.ZOOM_MEETING) // ← Add @Optional()
+    private readonly queue: Queue | null, // ← Add | null
+  ) {
+    if (!this.queue) {
+      this.logger.warn('ZoomMeetingQueue initialized without Redis - queue operations disabled');
+    }
+  }
 
   /**
    * Schedule a "generate-zoom-link" job to run 1 hour before startDateTime
@@ -21,7 +26,13 @@ export class ZoomMeetingQueue {
   async counselingLinkGeneration(
     scheduleId: string,
     startDateTime: Date,
-  ): Promise<Job> {
+  ): Promise<Job | null> { // ← Add | null
+    // ✅ Add null check
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping Zoom link generation for schedule ${scheduleId}`);
+      return null;
+    }
+
     const delay = calculateDelay(startDateTime);
 
     this.logger.log(
@@ -47,6 +58,12 @@ export class ZoomMeetingQueue {
   }
 
   async removeCounselingLinkGeneration(scheduleId: string): Promise<void> {
+    // ✅ Add null check
+    if (!this.queue) {
+      this.logger.warn(`Queue not available - skipping Zoom link removal for schedule ${scheduleId}`);
+      return;
+    }
+
     this.logger.log(`Removing Zoom link job for schedule ${scheduleId}`);
 
     const jobId = `zoom-link-${scheduleId}`;

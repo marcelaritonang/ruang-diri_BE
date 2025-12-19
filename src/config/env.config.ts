@@ -31,8 +31,12 @@ export const env = {
   ABLY_API_KEY: process.env.ABLY_API_KEY ?? '',
   CHAT_ENCRYPTION_KEY:
     process.env.CHAT_ENCRYPTION_KEY ?? 'default-dev-key-change-in-production',
-  REDIS_URL:
-    process.env.REDIS_URL ??
-    'rediss://default:AVAFAAIncDIzNzcyMjIwY2RiZjc0OTliODRkMTM4NmZhODc0YTE2ZXAyMjA0ODU@vocal-mutt-20485.upstash.io:6379',
+  
+  // ✅ REDIS CONFIGURATION - ADDED!
+  REDIS_ENABLED: process.env.REDIS_ENABLED === 'true',
+  REDIS_URL: process.env.REDIS_ENABLED === 'true' 
+    ? (process.env.REDIS_URL ?? 'rediss://default:AVAFAAIncDIzNzcyMjIwY2RiZjc0OTliODRkMTM4NmZhODc0YTE2ZXAyMjA0ODU@vocal-mutt-20485.upstash.io:6379')
+    : '', // Empty when disabled
+  
   GCS_BUCKET_NAME: process.env.GCS_BUCKET_NAME ?? 'ruangdiri-bucket',
 } as const;
