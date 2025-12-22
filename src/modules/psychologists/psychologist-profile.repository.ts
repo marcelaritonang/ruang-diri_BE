@@ -365,7 +365,7 @@ export class PsychologistRepository {
 
   async getPsychologistScheduledSessions(psychologistId?: string) {
     const fromUtc = dayjs().utc().startOf('day').toDate();
-    const toUtc = dayjs().utc().add(4, 'weeks').endOf('day').toDate();
+    const toUtc = dayjs().utc().add(30, 'days').endOf('day').toDate();
 
     const whereParts: SQL<unknown>[] = [
       eq(users.role, 'psychologist'),

@@ -1,0 +1,11 @@
+ole
+--------------------------------------+---------------------------------+--------------
+ 1487e486-d59e-4a94-85aa-3dcdf865439e | marcelaritonang1303@gmail.com   | client
+ 4daa5e62-6f6c-4118-9229-930853676d25 | test@example.com                | client
+ 2360700f-5a15-425b-ac63-afb31439008b | employee6@ruangdiri.com         | employee
+ b863841c-83b8-4647-ac6e-e3ddb78c71b6 | employee1@test.com              | employee
+ 7ac97e47-bcb4-4c85-aa50-04c9cba474f7 | marcelaritonang130303@gmail.com | client
+ 8f875267-4f2e-41f0-aad1-f6112d92404a | psychologist1@test.com          | psychologist
+ 055b0192-3c0e-4e18-9547-7cd75ce1e4c4 | school1@test.com                | organization
+ dbbc586e-cf19-42e0-b22d-5ec6d33030fe | client1@test.com                | client
+ 50036b50-678e-4620-aeb2-0d7e8cef0096 | student1@test.com               | student

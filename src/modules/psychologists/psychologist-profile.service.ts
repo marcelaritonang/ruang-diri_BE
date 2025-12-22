@@ -306,7 +306,7 @@ export class PsychologistsService {
       }
 
       const fromUtc = dayjs().utc().startOf('day');
-      const toUtc = dayjs().utc().add(4, 'weeks').endOf('day');
+      const toUtc = dayjs().utc().add(30, 'days').endOf('day'); // untuk 30 hari ke depan
 
       const sessionsByPsy: Record<
         string,

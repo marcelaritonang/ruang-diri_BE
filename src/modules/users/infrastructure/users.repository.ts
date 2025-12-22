@@ -227,12 +227,16 @@ export class UsersRepository {
           .where(eq(users.id, userId))
           .returning();
 
+        // ✅ FIX: Check if updatedUser exists
+        if (!updatedUser) {
+          throw new ConflictException('Failed to update user');
+        }
+
         const { password, lastPassword, ...restGeneralData } = updatedUser;
 
-        if (userPayload.onboarded === '1') {
-          restGeneralData.isOnboarded = true;
-        } else if (userPayload.onboarded === '0') {
-          restGeneralData.isOnboarded = false;
+        // ✅ FIX: Better boolean handling
+        if (updatedUser.isOnboarded !== undefined) {
+          restGeneralData.isOnboarded = Boolean(updatedUser.isOnboarded);
         }
 
         return { users: restGeneralData };
@@ -392,6 +396,46 @@ export class UsersRepository {
     return executePagedQuery(baseQuery.$dynamic(), [], page, limit, false);
   }
 
+
+  async updateOrganizationProfile(
+  organizationId: string,
+  data: Record<string, any>,
+): Promise<any> {
+  console.log('🔥 [Repository] updateOrganizationProfile START');
+  console.log('🔥 organizationId:', organizationId);
+  console.log('🔥 data:', JSON.stringify(data, null, 2));
+
+  try {
+    // Build update payload
+    const updatePayload: any = {
+      updatedAt: new Date(),
+    };
+
+    // Map fields
+    if (data.address !== undefined) {
+      updatePayload.address = data.address;
+    }
+    if (data.phone !== undefined) {
+      updatePayload.phone = data.phone;
+    }
+
+    console.log('🔥 updatePayload:', updatePayload);
+
+    const [updated] = await this.db
+      .update(organizations)
+      .set(updatePayload)
+      .where(eq(organizations.id, organizationId))
+      .returning();
+
+    console.log('🔥 updated result:', updated);
+    return updated;
+
+  } catch (error) {
+    console.error('🔥 ERROR in updateOrganizationProfile:', error);
+    throw error;
+  }
+}
+  
   async getUserByOrganizationId(
     organizationId: string,
   ): Promise<Omit<

@@ -254,7 +254,7 @@ export class UsersService {
   async updateUserProfile(
   updateData: Record<string, any>,
   currentUser: IUserRequest['user'],
-): Promise<SuccessResponse> {  // ✅ Return SuccessResponse
+): Promise<SuccessResponse> {
   console.log('📥 [Service] Raw data:', JSON.stringify(updateData, null, 2));
   console.log('👤 [Service] Current user:', { id: currentUser.id, role: currentUser.role });
 
@@ -265,12 +265,10 @@ export class UsersService {
       ...updateData.details,
       ...updateData.generalData,
     };
-    console.log('🔄 [Service] Flattened data:', JSON.stringify(flatData, null, 2));
   }
 
   // Validate data
   const validatedData = this.validateUserUpdatePayload(currentUser.role, flatData);
-  console.log('🔍 [Service] After validation:', validatedData);
 
   // Separate fields
   const baseUserFields: any = {};
@@ -289,30 +287,39 @@ export class UsersService {
   console.log('📊 [Service] Base fields:', baseUserFields);
   console.log('📊 [Service] Profile fields:', profileFields);
 
-  // Update users table
+  // ✅ Update users table
   if (Object.keys(baseUserFields).length > 0) {
     await this.usersRepository.update(currentUser.id, baseUserFields);
     console.log('✅ [Service] Users table updated');
   }
 
-  // Update profile table
+  // ✅ Update profile table
   if (Object.keys(profileFields).length > 0) {
     const profileTable = this.getProfileTableByRole(currentUser.role);
     
     if (profileTable) {
       if (currentUser.role === 'organization') {
+        // ✅ ORGANIZATION HANDLING
         const user = await this.usersRepository.findById(currentUser.id);
-        if (!user?.organizationId) {
-          throw new BadRequestException('Organization ID not found');
-        }
         
-        await this.usersRepository.updateUserProfile({
-          userId: user.organizationId,
-          updateData: profileFields,
-          profileTable,
-          useUserId: false,
+        console.log('👤 [Service] Organization user:', {
+          id: user?.id,
+          organizationId: user?.organizationId,
         });
+        
+        if (!user?.organizationId) {
+          console.log('⚠️ [Service] No organizationId, skipping profile update');
+        } else {
+          // ✅ Call new method
+          console.log('📝 [Service] Updating organization profile...');
+          await this.usersRepository.updateOrganizationProfile(
+            user.organizationId,
+            profileFields
+          );
+          console.log('✅ [Service] Organization profile updated');
+        }
       } else {
+        // ✅ OTHER ROLES (student, employee, psychologist)
         await this.usersRepository.updateUserProfile({
           userId: currentUser.id,
           updateData: profileFields,
@@ -320,12 +327,11 @@ export class UsersService {
           useUserId: true,
         });
       }
-      
       console.log(`✅ [Service] Profile table updated`);
     }
   }
 
-  // ✅ CRITICAL: Fetch and return fresh user data
+  // ✅ Fetch fresh data
   const freshUserData = await this.usersRepository.getUserProfile(currentUser.id);
   
   if (!freshUserData) {
@@ -335,12 +341,10 @@ export class UsersService {
   console.log('🎯 [Service] Fresh user data:', {
     id: freshUserData.id,
     isOnboarded: freshUserData.isOnboarded,
-    role: freshUserData.role
   });
 
   this.logger.log(`Profile updated successfully for user ID: ${currentUser.id}`);
 
-  // ✅ Return proper response
   return SuccessResponse.success(
     freshUserData,
     'Profile updated successfully'
