@@ -10,7 +10,7 @@ import { SchedulesRepository } from './infrastructure/schedules.repository';
 import { SchedulesService } from './application/schedules.service';
 
 @Module({
-  imports: [NotificationsModule, forwardRef(() => QueueModule), UsersModule],
+  imports: [NotificationsModule, forwardRef(() => QueueModule), forwardRef(() => UsersModule)],
   controllers: [SchedulesController],
   providers: [SchedulesRepository, SchedulesService],
   exports: [SchedulesRepository, SchedulesService],

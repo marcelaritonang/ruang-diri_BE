@@ -223,6 +223,46 @@
         ]
       }
     },
+    "/api/v1/users/subscription": {
+      "get": {
+        "operationId": "UsersController_getSubscription_v1",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "Bearer token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user subscription information",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
     "/api/v1/users/change-password": {
       "patch": {
         "operationId": "UsersController_changePassword_v1",
@@ -3106,6 +3146,70 @@
           "email",
           "fullName",
           "role"
+        ]
+      },
+      "SubscriptionInfoDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of subscription",
+            "example": "organization"
+          },
+          "displayType": {
+            "type": "string",
+            "description": "Display type of subscription",
+            "example": "Organisasi"
+          },
+          "remainingQuota": {
+            "type": "number",
+            "description": "Remaining quota for the subscription",
+            "example": 50
+          },
+          "totalQuota": {
+            "type": "number",
+            "description": "Total quota for the subscription",
+            "example": 100
+          },
+          "organizationName": {
+            "type": "object",
+            "description": "Organization name if applicable",
+            "example": "SMAN 123"
+          }
+        },
+        "required": [
+          "type",
+          "displayType",
+          "remainingQuota",
+          "totalQuota"
+        ]
+      },
+      "SubscriptionResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status of the response",
+            "example": "success"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Subscription info fetched successfully"
+          },
+          "data": {
+            "description": "Subscription information",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SubscriptionInfoDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "status",
+          "message",
+          "data"
         ]
       },
       "ChangePasswordDto": {

@@ -130,11 +130,27 @@ export class UsersRepository {
       },
     });
 
-    const filteredUserProfile = userProfile
-      ? Object.fromEntries(
-          Object.entries(userProfile).filter(([_, value]) => value !== null),
-        )
-      : null;
+    if (!userProfile) {
+      return null;
+    }
+
+    // ✅ FIX: Drizzle sometimes returns organization as array [id, type, totalQuota, remainingQuota]
+    // Convert to proper object if it's an array
+    let processedProfile: any = { ...userProfile };
+
+    // ✅ DEBUG: Log raw organization data from Drizzle
+    console.log('🔍 [Repository] Raw organization data:', processedProfile.organization);
+    console.log('🔍 [Repository] Organization type:', typeof processedProfile.organization);
+    console.log('🔍 [Repository] Is Array:', Array.isArray(processedProfile.organization));
+    if (processedProfile.organization && Array.isArray(processedProfile.organization)) {
+      const [id, type, totalQuota, remainingQuota] = processedProfile.organization as any[];
+      processedProfile.organization = { id, type, totalQuota, remainingQuota };
+      console.log('✅ [Repository] Converted array to object:', processedProfile.organization);
+    }
+
+    const filteredUserProfile = Object.fromEntries(
+      Object.entries(processedProfile).filter(([_, value]) => value !== null),
+    );
 
     return filteredUserProfile;
   }

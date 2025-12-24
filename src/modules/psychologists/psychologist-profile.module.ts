@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PsychologistsService } from './psychologist-profile.service';
 import { PsychologistsController } from './psychologist-profile.controller';
 import { PsychologistRepository } from './psychologist-profile.repository';
@@ -13,7 +13,7 @@ import { SchedulesModule } from '../schedules/schedules.module';
     PsychologistRepository,
     AvailabilityService,
   ],
-  exports: [PsychologistsService, AvailabilityService],
-  imports: [SchedulesModule],
+  exports: [PsychologistsService, PsychologistRepository, AvailabilityService],
+  imports: [forwardRef(() => SchedulesModule)],
 })
 export class PsychologistProfileModule {}

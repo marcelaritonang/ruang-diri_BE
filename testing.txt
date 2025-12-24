@@ -9,3 +9,36 @@ ole
  055b0192-3c0e-4e18-9547-7cd75ce1e4c4 | school1@test.com                | organization
  dbbc586e-cf19-42e0-b22d-5ec6d33030fe | client1@test.com                | client
  50036b50-678e-4620-aeb2-0d7e8cef0096 | student1@test.com               | student
+
+ {
+  "email": "organization2@test.com",
+  "password": "ruangdiri",
+  "fullName": "School Admin 4",
+  "timezone": "Asia/Jakarta",
+  "role": "organization",
+  "organizationId": "57ad31ae-0f37-442e-bcb9-667fb2493db2"  
+}
+
+ {
+  "email": "psychologist1@test.com",
+  "password": "",
+  "fullName": "School Admin 4",
+  "timezone": "Asia/Jakarta",
+  "role": "organization",
+  "organizationId": "57ad31ae-0f37-442e-bcb9-667fb2493db2"  
+}
+{
+  "email": "student2@test.com",
+  "password": "ruangdiri",
+  "fullName": "Student Test User 2",
+  "timezone": "Asia/Jakarta",
+  "role": "student"
+}
+
+{
+  "email": "psychologist2@test.com",
+  "password": "ruangdiri",
+  "fullName": "Dr. Psychologist Test User",
+  "timezone": "Asia/Jakarta",
+  "role": "psychologist"
+}

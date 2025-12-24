@@ -95,3 +95,56 @@ export class ChangePasswordResponseDto {
   })
   message: string;
 }
+
+export class SubscriptionInfoDto {
+  @ApiProperty({
+    description: 'Type of subscription',
+    example: 'organization',
+  })
+  type: string;
+
+  @ApiProperty({
+    description: 'Display type of subscription',
+    example: 'Organisasi',
+  })
+  displayType: string;
+
+  @ApiProperty({
+    description: 'Remaining quota for the subscription',
+    example: 50,
+  })
+  remainingQuota: number;
+
+  @ApiProperty({
+    description: 'Total quota for the subscription',
+    example: 100,
+  })
+  totalQuota: number;
+
+  @ApiProperty({
+    description: 'Organization name if applicable',
+    example: 'SMAN 123',
+    required: false,
+  })
+  organizationName: string | null;
+}
+
+export class SubscriptionResponseDto {
+  @ApiProperty({
+    description: 'Status of the response',
+    example: 'success',
+  })
+  status: string;
+
+  @ApiProperty({
+    description: 'Response message',
+    example: 'Subscription info fetched successfully',
+  })
+  message: string;
+
+  @ApiProperty({
+    description: 'Subscription information',
+    type: SubscriptionInfoDto,
+  })
+  data: SubscriptionInfoDto;
+}

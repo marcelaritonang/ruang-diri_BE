@@ -137,16 +137,16 @@ const getQueueExports = () => {
     forwardRef(() => SchedulesModule),
     forwardRef(() => ChatModule),
     NotificationsModule,
-    UsersModule,
-    
+    forwardRef(() => UsersModule),
+
     // Configure BullMQ with Redis connection
     BullModule.forRoot({
       connection: getRedisConnection(),
     }),
-    
+
     // Conditionally register queues
     ...getQueueRegistrations(),
-    
+
     HttpModule.register({
       timeout: 5000,
       maxRedirects: 5,

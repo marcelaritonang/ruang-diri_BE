@@ -533,6 +533,8 @@ export class PsychologistsService {
             totalPsychologists: slot.totalPsychologists,
             availablePsychologists: slot.availablePsychologists,
             bookedPsychologists: slot.bookedPsychologists,
+            availablePsychologistIds: slot.availablePsychologistIds, // ✅ ADDED: Return available psychologist IDs
+            bookedPsychologistIds: slot.bookedPsychologistIds, // ✅ ADDED: Return booked psychologist IDs
           })),
         }),
       ),

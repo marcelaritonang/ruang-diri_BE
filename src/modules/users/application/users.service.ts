@@ -8,6 +8,8 @@ import {
   BadRequestException,
   InternalServerErrorException,
   ConflictException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 
 import {
@@ -24,6 +26,7 @@ import { NotificationsService } from '@/modules/notifications/application/notifi
 import { IUserRequest } from '@/modules/auth/strategies/jwt.strategy';
 
 import { UsersRepository } from '../infrastructure/users.repository';
+import { PsychologistRepository } from '@/modules/psychologists/psychologist-profile.repository';
 
 import type { User, UpdateUser, CreateUser } from '../domain/users.schema';
 import { UsersQueryDto } from '../domain/dto/user-response.dto';
@@ -36,6 +39,7 @@ import {
 } from '../domain/dto/user-update.dto';
 import { cleanPayload } from '@/common/utils/validator.util';
 import { CloudStorageService } from '@/common/cloud-storage/cloud-storage.service';
+import dayjs from 'dayjs';
 
 @Injectable()
 export class UsersService {
@@ -45,6 +49,7 @@ export class UsersService {
     private usersRepository: UsersRepository,
     private notificationsService: NotificationsService,
     private cloudStorageService: CloudStorageService,
+    private psychologistRepository: PsychologistRepository,
   ) {}
 
   async findById(id: string): Promise<User> {
@@ -104,6 +109,104 @@ export class UsersService {
     return SuccessResponse.success(
       userProfile,
       'User profile fetched successfully',
+    );
+  }
+
+  /**
+   * Calculate available quota from psychologist availability
+   * Returns total number of available booking slots
+   */
+  private async calculateAvailableQuotaFromPsychologists(): Promise<number> {
+    try {
+      const availability = await this.psychologistRepository.getAllPsychologistAvailability();
+
+      if (!availability || availability.length === 0) {
+        this.logger.warn('No psychologist availability found');
+        return 0;
+      }
+
+      // Calculate 30 days from today
+      const fromDate = dayjs().startOf('day');
+      const toDate = dayjs().add(30, 'days').endOf('day');
+
+      // Count unique date + time slot combinations across all psychologists
+      const uniqueSlots = new Set<string>();
+
+      for (const slot of availability) {
+        const { dayOfWeek, startTime, endTime } = slot;
+
+        // Find all dates in next 30 days that match this day of week
+        let currentDate = fromDate.clone();
+        while (currentDate.isBefore(toDate) || currentDate.isSame(toDate, 'day')) {
+          const dowNumber = typeof dayOfWeek === 'number'
+            ? dayOfWeek
+            : Number(Object.values(dayOfWeek || {})[0] || 0);
+
+          if (currentDate.day() === dowNumber) {
+            // Create unique key for each date + time slot
+            const slotKey = `${currentDate.format('YYYY-MM-DD')}|${startTime}|${endTime}`;
+            uniqueSlots.add(slotKey);
+          }
+
+          currentDate = currentDate.add(1, 'day');
+        }
+      }
+
+      return uniqueSlots.size;
+    } catch (error) {
+      this.logger.error('Error calculating available quota:', error);
+      return 0;
+    }
+  }
+
+  async getSubscription(userId: string) {
+    this.logger.log(`Fetching subscription info for user ID: ${userId}`);
+
+    const userProfile = await this.usersRepository.getUserProfile(userId);
+
+    if (!userProfile) {
+      throw new NotFoundException(`User profile not found for ID: ${userId}`);
+    }
+
+    // ✅ DEBUG: Log the complete userProfile
+    console.log('🔍 [getSubscription] userProfile:', JSON.stringify(userProfile, null, 2));
+    console.log('🔍 [getSubscription] userProfile.organization:', userProfile.organization);
+    console.log('🔍 [getSubscription] userProfile.organizationId:', userProfile.organizationId);
+
+    let remainingQuota = 0;
+    let totalQuota = 0;
+
+    // If user has organization, use organization quota
+    // Otherwise, calculate from psychologist availability
+    if (userProfile.organization) {
+      this.logger.log('✅ User has organization - using organization quota');
+      remainingQuota = userProfile.organization.remainingQuota || 0;
+      totalQuota = userProfile.organization.totalQuota || 0;
+    } else {
+      // For individual users, calculate available quota from psychologist slots
+      this.logger.log('ℹ️ User has NO organization - calculating from psychologist availability');
+      const availableSlots = await this.calculateAvailableQuotaFromPsychologists();
+      this.logger.log(`📊 Calculated available slots: ${availableSlots}`);
+      remainingQuota = availableSlots;
+      totalQuota = availableSlots;
+    }
+
+    const subscriptionInfo = {
+      type: userProfile.organization ? 'organization' : 'individual',
+      displayType: userProfile.organization ? 'Organisasi' : 'Individual',
+      remainingQuota,
+      totalQuota,
+      organizationName: userProfile.organization?.organizationName || null,
+    };
+
+    // ✅ DEBUG: Log the subscription info being returned
+    console.log('📊 [getSubscription] subscriptionInfo:', JSON.stringify(subscriptionInfo, null, 2));
+
+    this.logger.log(`Fetched subscription info for user ID: ${userId}`);
+
+    return SuccessResponse.success(
+      subscriptionInfo,
+      'Subscription info fetched successfully',
     );
   }
 

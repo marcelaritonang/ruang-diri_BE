@@ -29,6 +29,7 @@ import {
   UserResponseDto,
   ChangePasswordDto,
   ChangePasswordResponseDto,
+  SubscriptionResponseDto,
 } from '../domain/dto/users-docs.dto';
 import { ZodPipe } from '@/common/pipes/zod-validation.pipe';
 import { usersQuery, UsersQueryDto } from '../domain/dto/user-response.dto';
@@ -68,6 +69,29 @@ export class UsersController {
     const result = await this.usersService.getMe(userId);
 
     // ✅ FIX: Add no-cache headers to prevent 304 responses
+    res.set({
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'Surrogate-Control': 'no-store',
+    });
+
+    return res.json(result);
+  }
+
+  @Get('subscription')
+  @ApiStandardDocs({
+    summary: 'Get user subscription information',
+    successResponseDto: SubscriptionResponseDto,
+    extraResponses: [{ status: 401, description: 'Unauthorized' }],
+    headers: [authorizationHeaderDocs()],
+  })
+  async getSubscription(@Req() req: IUserRequest, @Res() res: Response) {
+    const userId = req.user.id;
+
+    const result = await this.usersService.getSubscription(userId);
+
+    // Add no-cache headers to prevent cached responses
     res.set({
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
       'Pragma': 'no-cache',
